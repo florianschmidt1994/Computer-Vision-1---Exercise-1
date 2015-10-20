@@ -123,13 +123,22 @@ int main( int argc, char** argv )
 
     int c;
 
-    /// Load an image
-    src = imread(argv[1], 1 );
+    if(argc != 2) {
+        cout << "Usage: Main.out path/to/file" << endl;
+        return -1;
+    }
+
+    src = imread(argv[1], 1);
+
+    if(!src.data) {
+        cout << "Could not read file " << argv[1] << endl;
+        return -1;
+    }
+
+    cout << "File \"" << argv[1] << "\" loaded" << endl;
+    cout << "Starting processing" << endl;
+
     original = src.clone();
-
-    if( !src.data )
-    { return -1; }
-
     GaussianBlur( src, src, Size(3,3), 0, 0, BORDER_DEFAULT );
 
     /// Convert it to gray
