@@ -124,7 +124,7 @@ int main( int argc, char** argv )
     int c;
 
     /// Load an image
-    src = imread( "C:/Users/Timo/Desktop/test.jpg", 1 );
+    src = imread(argv[1], 1 );
     original = src.clone();
 
     if( !src.data )
