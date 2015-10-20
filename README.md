@@ -9,6 +9,5 @@ colour distance lower a given Δ (changeable by slider) - remove all connected p
 * output the resulting image
 * discuss problems and possible refinements of this algorithm
 
-#Hint:
-Search `opencv\samples\cpp\*.cpp` containing keywords you need (gradient, region, mask ...)
-See also core module tutorials
+**Hint:**
+Search `opencv\samples\cpp\*.cpp` containing keywords you need (gradient, region, mask ...). See also core module tutorials.
