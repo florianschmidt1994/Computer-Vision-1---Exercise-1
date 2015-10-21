@@ -11,3 +11,11 @@ colour distance lower a given Δ (changeable by slider) - remove all connected p
 
 **Hint:**
 Search `opencv\samples\cpp\*.cpp` containing keywords you need (gradient, region, mask ...). See also core module tutorials.
+
+#Result
+
+##Before
+![](https://github.com/florianschmidt1994/ComputerVision1-Exercise1/blob/master/before.png)
+
+##After
+![](https://github.com/florianschmidt1994/ComputerVision1-Exercise1/blob/master/after.png)
