@@ -1,4 +1,5 @@
 #include "main.h"
+#include "UsedPixelsMap.h"
 
 // Maximum color distance derived from RGB(0,0,0) and RGB(255,255,255)
 const int MAX_SQUARED_COLOR_DISTANCE = getSquaredColorDistance(Vec3b(0,0,0), Vec3b(255,255,255));
@@ -6,34 +7,6 @@ const int MAX_SQUARED_COLOR_DISTANCE = getSquaredColorDistance(Vec3b(0,0,0), Vec
 int getSquaredColorDistance(Vec3b c1, Vec3b c2) {
 	return (c1[0]-c2[0])*(c1[0]-c2[0]) + (c1[1]-c2[1])*(c1[1]-c2[1]) + (c1[2]-c2[2])*(c1[2]-c2[2]);
 }
-
-class UsedPixelsMap {
-public: 
-
-	Mat usedPixels;
-
-	UsedPixelsMap() { }
-
-	UsedPixelsMap(int rows, int cols) {
-		usedPixels = Mat(rows, cols, CV_8UC1, cv::Scalar(255));
-	}
-
-	// returns true if p has already been added to a region
-	bool isUsed(Point p) {
-		return usedPixels.at<uchar>(p) != 255;
-	}
-
-	// marks p as used
-	void setUsed(Point p) {
-		usedPixels.at<uchar>(p) = 0;
-	}
-
-	// marks all pixels in usedPixelsMap as unused
-	void reset() {
-		usedPixels = Scalar(255);
-	}
-
-};
 
 struct PointWithGradient {
 	Point pos;
@@ -44,7 +17,7 @@ class ComparePWG {
 public:
 
 	// Returns true if t1 has a higher gradient than t2
-	bool operator()(PointWithGradient& t1, PointWithGradient& t2) {  
+	bool operator()(PointWithGradient& t1, PointWithGradient& t2) {
 		return (t1.gradient > t2.gradient);
 	}
 };
@@ -100,7 +73,7 @@ static void onTrackbar(int, void*) {
 
 					bool pointExists = p.x + i >= 0 && p.x + i < im.cols && p.y + j >= 0 && p.y + j < im.rows;
 
-					if(pointExists) { 
+					if(pointExists) {
 						Point p2 = Point(p.x + i, p.y + j);
 						if(!usedPixels.isUsed(p2)) {
 							// pixel not yet used
@@ -140,9 +113,7 @@ int main( int argc, char** argv ) {
 	int scale = 1;
 	int delta = 0;
 	int ddepth = CV_16S;
-
-	int c;
-
+    
 	/// Load an image
 	src = imread( argv[1], 1 );
 	original = src.clone();
