@@ -22,13 +22,15 @@ public:
 	}
 };
 
+
+
 priority_queue<PointWithGradient, vector<PointWithGradient>, ComparePWG> pq, backupQueue;
 UsedPixelsMap usedPixels;
 int edgeThresh = 1;
 Mat original;
 
 // define a trackbar callback
-static void onTrackbar(int, void*) {
+void onTrackbar(int, void*) {
 
 	Mat im = original.clone();
 	usedPixels.reset();
@@ -110,41 +112,57 @@ int main( int argc, char** argv ) {
 
 	Mat src, src_gray;
 	Mat grad;
-	int scale = 1;
-	int delta = 0;
-	int ddepth = CV_16S;
-    
+
 	/// Load an image
 	src = imread( argv[1], 1 );
 	original = src.clone();
 
-	if( !src.data )
-	{ return -1; }
+	if( !src.data ) {
+        return -1;
+    }
 
-	GaussianBlur( src, src, Size(3,3), 0, 0, BORDER_DEFAULT );
+    init(src, grad);
 
-	/// Convert it to gray
-	cvtColor( src, src_gray, CV_RGB2GRAY );
+    // create a toolbar
+	namedWindow("Result", WINDOW_AUTOSIZE);
+	resizeWindow("Result", original.size().width,original.size().height);
+	createTrackbar("threshold", "Result", &edgeThresh, 100, onTrackbar);
+	onTrackbar(0, 0);
+	imshow("Original", original);
+	waitKey(0);
 
-	/// Generate grad_x and grad_y
-	Mat grad_x, grad_y;
-	Mat abs_grad_x, abs_grad_y;
+	return 0;
+}
 
-	/// Gradient X
-	Sobel( src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT );
-	convertScaleAbs( grad_x, abs_grad_x );
+void init(const Mat &src, Mat &grad) {
+    Mat srcGray;
+    int scale = 1;
+    int delta = 0;
+    int ddepth = CV_16S;
+    GaussianBlur(src, src, Size(3,3), 0, 0, BORDER_DEFAULT);
 
-	/// Gradient Y
-	Sobel( src_gray, grad_y, ddepth, 0, 1, 3, scale, delta, BORDER_DEFAULT );
-	convertScaleAbs( grad_y, abs_grad_y );
+    /// Convert it to gray
+    cvtColor(src, srcGray, CV_RGB2GRAY);
 
-	/// Total Gradient (approximate)
-	addWeighted( abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad );
+    /// Generate gradientX and gradientY
+    Mat gradientX, gradientY;
+    Mat absolutGradientX, absolutGradientY;
 
-	usedPixels = UsedPixelsMap(src.rows, src.cols);
+    /// Gradient X
+    Sobel(srcGray, gradientX, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT);
+    convertScaleAbs(gradientX, absolutGradientX);
 
-	// iterate over all pixels and add them to the priority queue
-	for(int y=0;y<grad.rows;y++) {
+    /// Gradient Y
+    Sobel(srcGray, gradientY, ddepth, 0, 1, 3, scale, delta, BORDER_DEFAULT);
+    convertScaleAbs(gradientY, absolutGradientY);
+
+    /// Total Gradient (approximate)
+    addWeighted(absolutGradientX, 0.5, absolutGradientY, 0.5, 0, grad);
+
+    usedPixels = UsedPixelsMap(src.rows, src.cols);
+
+    // iterate over all pixels and add them to the priority queue
+    for(int y=0;y<grad.rows;y++) {
 		for(int x=0;x<grad.cols;x++) {
 			// get the gradient for each pixel
 			int gradient = grad.at<uchar>(Point(x,y));
@@ -157,14 +175,4 @@ int main( int argc, char** argv ) {
 			pq.push(pwg);
 		}
 	}
-
-	// create a toolbar
-	namedWindow("Result", WINDOW_AUTOSIZE);
-	resizeWindow("Result", original.size().width,original.size().height);
-	createTrackbar("threshold", "Result", &edgeThresh, 100, onTrackbar);
-	onTrackbar(0, 0);
-	imshow("Original", original);
-	waitKey(0);
-
-	return 0;
 }

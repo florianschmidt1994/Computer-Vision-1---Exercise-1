@@ -14,6 +14,7 @@
 using namespace cv;
 using namespace std;
 
-int getSquaredColorDistance(Vec3b c1, Vec3b c2); 
+int getSquaredColorDistance(Vec3b c1, Vec3b c2);
+void init(const Mat &src, Mat &grad);
  
 #endif
