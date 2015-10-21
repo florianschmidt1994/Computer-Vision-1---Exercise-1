@@ -16,5 +16,6 @@ using namespace std;
 
 int getSquaredColorDistance(Vec3b c1, Vec3b c2);
 void init(const Mat &src, Mat &grad);
+void onTrackbar(int, void*);
  
 #endif
